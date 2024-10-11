@@ -1,0 +1,802 @@
+Day - 1
+
+DevOps - Basics
+IAC - benefits, types 
+Terraform - Features, Architecture , Commands , Installation
+Demo _ installation
+Providers, Resources , Data - Sources
+Activity - S3 bucket
+Variables - Input, Output , Local
+Activity - Exploring variables
+Activity - VPC, EC2
+
+Meta-Arguments - for-each, count , dynamic, depends-on, provider
+Activity - for-each, count
+AWS Cloud
+
+Day - 2
+
+State File, State Management Commands
+Activity - Blob Storage, VM
+Backend - Local, Remote - Activity
+Import - Individual, Bulk - Activity
+Provisioner - Activity
+Modules & Workspaces - Activity
+
+Azure Cloud
+
+Day - 3
+
+EBS , Load Balancing, Autoscaling, Databases - Activity
+IAM - User, group, roles, permissions
+
+Day - 4
+CI/CD , using Jenkins 
+
+Functions, Complex Variables , Conditions , Expressions
+
+Terraform Cloud, Terraform Enterprise
+
+Best Practices
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+DAY - 1
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+DevOps:
+-> combines Operations & Development 
+-> achieve the business goals effectively
+
+Goals:
+-> Profits
+-> Quality
+-> Optimize cost/time/efforts/resources
+-> Increase customer satisfaction
+
+1) Shared Goal: increase collaboration
+2) Automation
+3) Continuous Model
+	Continuous Development - track the changes - Version Control tools ( who, when , why, what ) - transparency, Audit , Governance
+		Ex: Git ( GitHub, GitLab, BitBucket ) , SVN, CVS, Perforce, Mercurial
+	Continuous Testing - test as often as early - to identify errors & resolve them - Automated Testing Tools
+		Ex: Selenium, JUnit, TestNG, Appium, Cucumber, HP WebInspect , OWASP ZAP
+	Continuous Integration - existing application ( stable, good ) =====> added new changes
+		=> Compile -> Build & Package -> Unit Testing -> Analysis -> Security Test ===> steps are automated
+		=> smooth transition for the new changes to get integrated to the existing code
+		Ex: Jenkins, Travis CI, Bamboo, AWS CodePipeline, Azure Pipelines, GitHub Actions, GitLab CI/CD
+	Continuous Delivery/Deployment - IAC - Terraform, Ansible, Docker , Kubernetes, Pulumi, Chef
+	Continuous Monitoring - analyze the performance
+		Ex: Nagios, Sensu, ELK, Promethues, Grafana, Dynatrace, DataDog
+
+
+IAC - Infrastructure as Code / Infrastructure Automation
+Benefits:
+-> Time-saving
+-> Reusable, edit, sharing
+-> Consistency, security
+-> cost
+
+100 servers & configure them - manually - more time, errors
+
+types of IAC tools:
+-> Infrastructure Provisioning
+	Terraform, OpenTofu, Crossplane, Pulumi, AWS CloudFormation, ARM , Google CDP 
+
+-> Configuration Management
+	Ansible, Saltstack, Chef, Puppet
+
+-> Containerization
+	Container Tools: Docker, Podman, LXC/LXD, rkt
+	Container Orchestration: Kubernetes, OpenShift, Apache Mesos, Docker Swarm, Rancher
+	
+Terraform:
+---------------------------------------------
+-> 2014, Go , HashiCorp , HCL
+-> Infrastructure Provisioning tool ( IAC tool )
+-> supports Multi-Cloud
+-> Open-source, free , Enterprise, Cloud
+-> Reusable - Modules
+-> Consistent
+-> Idempotent
+
+First Run: Code ( 3 servers ) -> running this code -> create 3 servers in the cloud
+Second Run: ( not changing anything in the code ) -> run the code -> 1) again create 3 servers OR 2) it will not create anything
+
+-> easily integrated with the other tools
+
+If you want to choose an IAC tool:
+-> price & support
+-> multi-cloud, hybrid-cloud
+-> vendor, learning curve
+-> integration
+
+Architecture:
+
+=> terminology:
+1) Executable file
+2) Configuration files / Manifest file - *.tf , contain the information for creating resources
+3) Plugins - Provider and Provisioner
+4) State file - Database for Terraform - contain information regarding the resources created using Terraform - terraform.tfstate , terraform.tfstate.backup
+
+===============================================================
+INSTALLATION STEPS
+===============================================================
+
+=> Install Terraform on Windows
+--------------------------------
+Download the appropriate version of Terraform from https://www.terraform.io/ . For me, it’s Windows
+64-bit version.
+
+Make a folder on your C:\ drive where you can save your terraform executable file.
+
+After the download finishes, find the zip file in the file explorer. Extract the zip file and save the executable in the folder created above.
+
+Open your Start Menu and type in “ Environment” and the first thing that comes up “Edit the System
+Environment variables”. Click on that.
+
+Click on Environment Variables tab to the bottom right of the settings page that appears.
+
+Under System Variables, select PATH and click on Edit.
+
+Click New and add the terraform executable path in the PATH environment variable.
+
+Open up command prompt and type terraform. You should see terraform help
+
+Verify the installation was successful by entering terraform –version in the cmd prompt. If it returns a version, you are good to go. (Optional)
+
+https://developer.hashicorp.com/terraform/downloads?product_intent=terraform
+
+=> Install GIT on Windows
+--------------------------------
+https://git-scm.com/downloads
+
+=> Install Specific CLI
+AWS - aws cli
+Azure - Azure cli
+Google - gcloud , Google CLI
+
+Commands:
+Main commands:
+  init          Prepare your working directory for other commands
+  validate      Check whether the configuration is valid
+  plan          Show changes required by the current configuration
+  apply         Create or update infrastructure
+  destroy       Destroy previously-created infrastructure
+
+terraform init: initialize your working directory ( download providers, download modules, initialize backend , create a lock file )
+terraform validate: validate the syntax
+terraform plan: what resources will be created before actually creating, dry-run / preview
+terraform apply: create/updating resource, create/update state file
+terraform destroy: destroy resources, update statefile
+
+Destroy a specific resource:
+1) terraform destroy -target="resourcename"
+2) In the .tf files, remove the code and run terraform apply
+
+1) Provider
+provider "aws"{
+	region = eu-west-1
+	//Configuration 
+}
+
+provider "azurerm" {
+	//Configuration
+}
+
+provider "google" {
+	//Configuration
+}
+
+2) Resource - will provide information regarding what infra has to be created
+resource "resourcename" "block_name" {
+	// properties of that resource
+}
+
+
+resource "aws_s3_bucket" "example_s3_1" {
+
+}
+
+resource "aws_s3_bucket" "example_s3_2" {
+	bucket = neeha-demo-lkm-0810
+}
+
+# we will get error ( why? availability_zone - (Required) this is not configured )
+resource "aws_ebs_volume" "example" {
+
+}
+
+resource "aws_ebs_volume" "example" {
+	availability_zone = eu-west-1a
+}
+
+Refer:
+aws_s3_bucket.example_s3_2.bucket
+
+3) Data-Source: read-only operation
+data "resourcename" "blockname" {
+	// unique information
+}
+
+data "aws_s3_bucket" "sample_s3" {
+	bucket = "s3-sample-ikjhgfdgyukilo"
+}
+
+Refer:
+data.aws_s3_bucket.sample_s3.arn
+
+4) Variables:
+
+Input
+Output
+Local
+
+Before:
+-------------------------------------------------
+resource "aws_s3_bucket" "example_s3_2" {
+	bucket = "neeha-demo-lkm-0810"
+}
+
+After:
+-------------------------------------------------
+variable "variable_name" {
+	type = // string, number, bool , map , list , object
+	description = 
+	default= // Actual value 
+	sensitive = true/false
+}
+
+variable "s3_bucket_name" {
+	type = "string"
+	description = "Name of my S3 bucket"
+	default = "neeha-demo-lkm-0810"
+	sensitive = false
+}
+
+var.s3_bucket_name
+
+resource "aws_s3_bucket" "example_s3_2" {
+	bucket = var.s3_bucket_name
+}
+
+
+1) Default argument inside the variable block - Lowest priority
+2) terraform.tfvars , terraform.tfvars.json , *.auto.tfvars , *.auto.tfvars.json - second highest 
+
+File: terraform.tfvars
+s3_bucket_name="sample-lkm-bucket-08102024"
+
+3) Command-line arguments - Highest Priority
+terraform plan -var="s3_bucket_name=command-line-lkm-bucket-08102024"
+terraform plan --var-file="path along with file name"
+
+Output: display something on to the terminal
+
+output "s3_bucket_details" {
+	value = "this is the bucket i created: ${aws_s3_bucket.example_s3_2.arn} "
+}
+
+output "s3_bucket_id" {
+	value = aws_s3_bucket.example_s3_2.id
+}
+
+Local: constant values
+
+local {
+	variable_name = "value"
+	EC2_name = "mywebserver"
+	Vpc_name = "databasevpc"
+}
+
+local.variable_name
+local.EC2_name
+
+Activity 3:
+VPC -> Subnet, Route Table, Internet Gateway, Security Group -> Route Table Association -> Instance ( EC2 )
+
+----------------------------------------------------------------------------------------------------------------
+
+Meta-Arguments:
+
+1 resource block in .tf file ->  run terraform commands -> 1 resource is getting created
+
+10 buckets
+-> 10 resource blocks -> 10 buckets ===> Dis: Lengthy code ( Code Duplication )
+
+1) count - whole number
+
+resource "aws_s3_bucket" "bucket" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-${count.index}"
+}
+
+How terraform reading the code in backend is: use the count.index - starts with 0 and end with n-1 (9)
+--------------------------------------------------
+resource "aws_s3_bucket" "bucket[0]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-0"
+}
+resource "aws_s3_bucket" "bucket[1]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-1"
+}
+resource "aws_s3_bucket" "bucket[2]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-2"
+}
+resource "aws_s3_bucket" "bucket[3]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-3"
+}
+resource "aws_s3_bucket" "bucket[4]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-4"
+}
+resource "aws_s3_bucket" "bucket[5]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-5"
+}
+resource "aws_s3_bucket" "bucket[6]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-6"
+}
+resource "aws_s3_bucket" "bucket[7]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-7"
+}
+resource "aws_s3_bucket" "bucket[8]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-8"
+}
+resource "aws_s3_bucket" "bucket[9]" {
+	count = 10
+	bucket = "neeha-demo-lkm-0810-9"
+}
+
+2) for-each - accepts map/set, each.key = each.value
+resource "aws_s3_bucket" "bucket" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = each.key
+}
+
+How terraform reading the code in backend is:
+---------------------------------------------------------
+resource "aws_s3_bucket" "bucket["lkm-demo-sample-0810"]" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = lkm-demo-sample-0810
+}
+resource "aws_s3_bucket" "bucket["lkm-for-sample-0811"]" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = lkm-for-sample-0811
+}
+resource "aws_s3_bucket" "bucket["lkm-each-sample-0812"]" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = lkm-each-sample-0812
+}
+resource "aws_s3_bucket" "bucket["lkm-for-each-sample-0813"]" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = lkm-for-each-sample-0813
+}
+resource "aws_s3_bucket" "bucket["lkm-neeha-sample-0814"]" {
+	for_each = { "lkm-demo-sample-0810" , "lkm-for-sample-0811" , "lkm-each-sample-0812" , "lkm-for-each-sample-0813" , "lkm-neeha-sample-0814" }
+	bucket = lkm-neeha-sample-0814
+}
+
+--------------------------------------------------------------------
+
+resource "aws_ebs_volume" "example" {
+	for_each = { "us-east-1a" = "true" , "eu-west-1b" = "false" , "eu-north-1c" = "true" }
+	availability_zone = each.key
+	encrypted = each.value
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+DAY - 2
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+State Management Commands
+terraform.tfstate - current version
+terraform.tfstate.backup - previous version
+
+-> terraform output - retrieve the output block content and display on the terminal
+
+-> terraform show - display the complete state file
+
+-> terraform state list - display the list of resources stored in your state file
+
+-> terraform state show "resource_name.block_name"
+
+terraform state pull / push
+terraform state rm / mv
+terraform refresh
+
+Using Terraform let's say you created 5 servers: state file - 5 servers , cloud - 5 servers
+manually you deleted 1 server, state file - 5 servers , cloud - 4 servers
+
+if you want this server back -
+1) create 1 server manually , using terraform import 
+you don't want the server
+2) terraform state rm - state file will forget about the server
+3) terraform refresh
+
+Backend: location of your state file
+
+For Collaboration, we are trying to share the state file with your team
+we have to store the state file in a remote location which is accessible to your team
+
+Solutions: 
+-> Vault - we have to make sure this is supporting locking
+-> S3 with DynamoDB
+-> Blob Storage
+-> Google Cloud Storage
+
+
+Features which we have to look in services which can be used to store our state file
+-> restricted access
+-> secure - encryption
+-> Locking
+-> versioning
+-> terraform should support it
+
+1) Local
+terraform {
+	backend "local" {
+		path = ""
+	}
+}
+
+2) remote 
+terraform {
+	backend "remote" {
+		hostname = ""
+		workspace = {
+
+		}
+	}
+}
+
+3) S3 
+terraform {
+	backend "s3" {
+		region = ""
+		bucket = ""
+		dynamodb_table = ""
+		prefix = ""
+	}
+}
+
+4) Azure - blob storage
+
+terraform {
+	backend "azurerm" {
+		resource_group_name = ""
+		storage_account_name = ""
+		storage_container_name = ""
+		key = ""	
+	}
+}
+
+5) Google
+
+terraform {
+	backend "gcs" {
+		bucket = ""
+		key = "" 	
+	}
+}
+
+Provisioners: after the resource is created
+
+1) file
+resource "azurerm_virtual_machine" "mywebserver" {
+	// properties
+	provisioner "file" {
+		source = ""
+		destination = ""
+	}
+	connection {
+		type = ""
+		host = ""
+		password = ""
+		user = ""
+	}
+}
+
+
+2) local-exec - execute commands on the machine where terraform is installed
+resource "azurerm_virtual_machine" "mywebserver" {
+	// properties
+	provisioner "local-exec" {
+		command = "" // required
+		when = // optional
+		interpreter = // optional
+	}
+}
+
+3) remote-exec - execute commands on the remote resource
+resource "azurerm_virtual_machine" "mywebserver" {
+	// properties
+	provisioner "remote-exec" {
+		inline = [ "sudo yum update -y" , "sudo yum install -y git" ]
+	}
+	connection {
+		type = ""
+		host = ""
+		password = ""
+		user = ""
+	}
+}
+
+Import:
+------------------------------------------------------------
+
+We have written *.tf files -> run terraform commands -> created resources in cloud, created/updated your state file
+
+Existing Infrastructure => *.tf file ( resource block ) , State file ( terraform.tfstate )
+
+Individual Import:
+-----------------------------------
+1) Identify resource
+2) Write resource block ( *.tf file )
+3) terraform import "resource_name.block_name" "id"
+4) terraform plan - If any differences are present, then we will update *.tf file
+5) terraform apply 
+
+Bulk Import:
+-----------------------------------
+
+import {
+	to = 
+	id =
+}
+
+import {
+	to =
+	id =
+}
+
+1) Identify the resources
+2) Write Import blocks ( to and id )
+3) terraform plan -generate-config-out filename.tf
+4) review the code
+5) terraform apply
+
+-----------------------------------------------------------------------
+
+Workspaces:
+
+-> set of *.tf files ( main.tf, neeha.tf, variables.tf ,.... ) -> run terraform commands -> only 1 state file is getting created
+
+3 VMs, 2 VPC/Virtual networks, 4 subnets , .... ===> set of .tf files ===> If I want to create same components again 
+
+=> duplicate the code
+=> Meta-Arguments
+=> Workspaces
+
+replicate resources
+=> in multiple regions
+=> in multiple accounts
+=> multiple environments( dev, test, pre-prod )
+
+
+  new, list, show, select and delete Terraform workspaces.
+
+Subcommands:
+    delete    Delete a workspace
+    list      List Workspaces
+    new       Create a new workspace
+    select    Select a workspace
+    show      Show the name of the current workspace
+
+===> set of *.tf files ( main.tf, neeha.tf, variables.tf ,.... ) -> run terraform commands -> multiple state files ( using workspaces )
+
+terraform.tfstate.d - this folder will be created when we start using workspaces
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+DAY - 3
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Modules:  activities
+--------------------------------
+-> Code Reusability
+-> Standard template
+-> promotes open source 
+
+Code ( set of .tf files ) -> 3 VMs, 2 Databases , 2 VPCs , 6 subnets, ..... ===> 
+
+module "module_name" {
+	source = "" // hasicorp module registry, your own machine ( locally ), git repos , https urls ( REQUIRED )
+	version = // optional
+}
+
+
+EBS - AWS
+App Service - Azure, AKS
+Autoscaling 
+Database in Azure
+
+IAM Demo
+Google Cloud Storage - VM
+ECR/ECS
+
+CI/CD :
+------------------------------------------------------
+-> Terraform ( IAC )
+-> GitLab ( Version Control ) - storing our code which is responsible for creating the infra
+-> Jenkins ( CI/CD tool )
+
+Jenkins - https://www.jenkins.io/
+-> Continuous Integration and Continuous Delivery
+-> Easy installation
+-> Easy configuration
+-> Plugins
+-> Extensible
+-> Distributed
+
+Jenkins Pipeline - Jenkinsfile
+2 different syntax - to develop Jenkinsfile 
+=> Scripted 
+=> Declarative
+
+=> Terraform plugin
+=> Jenkinsfile:
+	terraform init
+	terraform validate
+	terraform plan
+	terraform apply
+
+-> depends_on - defining dependencies explicitly by the user
+resource "azurerm_virtual_machine" "myvm" {
+	depends_on = data.aws_ami.amazon-linux
+}
+
+-> dynamic - iterate or loop a certain part of the resource block
+resource "aws_security_group" "aws-sg" {
+  name   = "mysecuritygroup"
+  vpc_id = aws_vpc.vpc.id
+
+  # SSH access from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["3.7.2.233/32"]
+  }
+
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["3.7.2.233/32"]
+  }
+
+  # outbound internet access
+}
+
+After using dynamic:
+-------------------------------------------
+resource "aws_security_group" "aws-sg" {
+  name   = "mysecuritygroup"
+  vpc_id = aws_vpc.vpc.id
+
+  dynamic ingress {
+    for_each = {"22", "80" , "443" , "8080"}
+    from_port   = each.key
+    to_port     = each.key
+    protocol    = "tcp"
+    cidr_blocks = ["3.7.2.233/32"]
+  }
+
+  # outbound internet access
+}
+
+
+-> lifecycle - controls the resource lifecycle ( create, modify, destroy, recreate )
+resource "azurerm_virtual_machine" "myvm" {
+	# properties 
+
+	lifecycle { 
+		ignore_changes = true
+	}
+}
+
+=> create_before_destroy
+=> prevent_destroy
+=> custom conditions : pre-condition, post-condition
+=> replace_triggered_by
+
+Terraform OSS
+Terraform Cloud - Free, Standard, Plus - SaaS
+Terraform Enterprise - Self-Managed
+
+Terraform Cloud:
+-> Cost Estimation
+-> Monitoring / Observability
+-> Policy Checking ( Policy, Policy sets ) - Policy as Code , Sentinel Policies
+-> SSO 
+-> Remote State
+-> Private Registry
+-> Drift Detection
+-> Role Based Access Control
+-> Version Control Integration
+
+Workflows 
+-> CLI driven 
+-> VCS driven workflow
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LINKS:
+================================================================================================
+
+Terraform Architecture
+https://spaceliftio.wpcomstaging.com/wp-content/uploads/2023/03/terraform-architecture-diagram.png
+
+Cloud Resource Comparison
+https://pbs.twimg.com/media/FFFq50nWQAY0tcD.jpg
+
+----------------------------------------------------------------------------------------------------------
+For Restoring previous version state files, and also for understanding how you can manage state files - Please go through below links, it will help you understand more about state files
+
+https://support.hashicorp.com/hc/en-us/articles/4403065345555-Terraform-State-Restoration-Overview#:~:text=You%20can%20use%20that%20as%20your%20new%20state,new%20terraform.tfstate%20file%2C%20and%20run%20terraform%20plan%20again.
+
+https://developer.hashicorp.com/terraform/tutorials/state/state-cli
+
+https://developer.hashicorp.com/terraform/tutorials/state/resource-drift
+
+----------------------------------------------------------------------------------------------------------
+If anyone wants to explore about dependency between resources and how we can identify the dependencies . I would like to request you to go through these links once. I hope you will be able to understand
+
+https://developer.hashicorp.com/terraform/tutorials/configuration-language/dependencies
+
+https://developer.hashicorp.com/terraform/internals/graph
+
+https://developer.hashicorp.com/terraform/language/meta-arguments/depends_on
+
+
+and if you want to visualize your dependencies in a easy manner ( pictorial format )
+
+https://developer.hashicorp.com/terraform/cli/commands/graph
+
+
+Tools through which you can do that 
+
+https://medium.com/vmacwrites/tools-to-visualize-your-terraform-plan-d421c6255f9f
+----------------------------------------------------------------------------------------------------------
+
+When to use count & for_each
+
+https://medium.com/@business_99069/terraform-count-vs-for-each-b7ada2c0b186
+https://medium.com/@business_99069/terraform-moving-resources-around-in-prod-e4b444a06710
+----------------------------------------------------------------------------------------------------------
+
+Bulk Import
+
+https://spacelift.io/blog/importing-exisiting-infrastructure-into-terraform
+https://www.linkedin.com/pulse/terraform-15-import-automatic-code-generation-william?utm_source=share&utm_medium=member_android&utm_campaign=share_via
+https://medium.com/@khhini/simple-way-to-import-existing-resources-into-terraform-a8c2c2a06a49
+
+
