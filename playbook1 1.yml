@@ -1,0 +1,8 @@
+---
+- hosts: target
+  vars:
+    message: "This is my secret"
+  
+  tasks:
+  - name: Output message
+    shell: echo {{ message }} >> /tmp/file3.txt

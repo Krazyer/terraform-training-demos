@@ -1,0 +1,12 @@
+1. mkdir roles-demo && cd roles-demo
+2. vi playbook.yml (Add script)
+3. Create a directory for downloading roles(mkdir roles) 
+4. cd roles 
+5. pwd (Copy the path)
+6. ansible-galaxy install geerlingguy.docker -p /root/roles-demo/roles
+7. Navigate to roles-demo and execute the playbook
+8. ansible-playbook playbook.yml
+9. Once the playbook is executed successfully, Navigate to worker node
+10. Login to root(sudo su -)
+11. Check docker status(systemctl status docker)
+ 

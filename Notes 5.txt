@@ -1,0 +1,1 @@
+If you want to run any task on any particular machine you can use ansible delegate_to module. In the following steps i will show how to use ansible delegate to module with an example.

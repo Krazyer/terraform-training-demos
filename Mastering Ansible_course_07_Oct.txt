@@ -1,0 +1,473 @@
+Infrastructure Automation
+Infrastructure as a Code
+Tools for IaC
+Ansible
+Ansible Architecture
+Ansible Installation and Setup
+Adhoc Commands in Ansible
+Playbooks in Ansible
+Keywords in Ansible
+Jinja Templates
+Tags
+Testing the Playbooks
+Ansible Vault
+Roles
+Ansible Galaxy
+Error Handling in Playbooks
+Ansible Integration with CI/CD Tool --> Jenkins
+Ansible Tower
+
+Additional concepts:
+===================
+Debugging the Playbooks
+Sanity Testing in Playbooks --> ansible-lint
+
+===============================================================
+
+DevOps:
+======
+Dev + Ops ==> Software Delivery/Infrastructure changes,... ==> faster delivery 
+
+
+Infrastructure Automation:
+
+- Automate the entire infra by using scripts.
+- VM- 1 min , S3 , Vpc,-> 
+
+
+-------------------------
+IA --> process of scripting environment
+
+
+Tomcat server --> 25 machines --> Manually --> 10 mins* 25 --> 250 mins --> More than 4 hours 
+
+Manual effort - Increased
+Cost - Increased
+Risk - More 
+
+Tomcat server --> 25 machines --> Automate --> script --> Deploying into all 25 machines by using IA tool
+
+Manual effort - Decreased
+Cost - Decreased
+Risk - Less
+
+IA --> process of scripting environment --> IaC
+
+IaC --> Infrastructure as a Code
+
+Infrastructure as a Code:
+========================
+Infrastructure Provisioning --> On-premise/Cloud
+Infrastructure Management
+Configuration Management
+Deployments
+
+Containerization:
+VM -
+
+conta 
+
+
+Container Orchestration,...
+
+Tools:
+=====
+Terraform --> Infra provisioning and Management --> HCL
+AWS CloudFormation --> json/yaml
+Azure ARM Templates
+
+Chef --> Configuration Management and Deployments --> Ruby
+Puppet --> Ruby DSL
+Saltstack --> Python
+Ansible --> yaml
+
+Docker --> Containerization --> yaml
+Rocket
+Rancher
+LxC
+
+Kubernetes --> Container Orchestration --> yaml 
+Docker Swarm
+Openshift
+
+
+Ansible:
+=======
+Configuration Management and Deployments
+script --> yaml 
+
+Tomcat server --> 25 machines --> Automate --> script 
+
+Controller/Management Node --> Ansible is installed and we write/add the scripts 
+Worker/Target/Host Node(25 machines) --> Deploy the configuration written in the script
+
+Advantages :
+Open source 
+-it is very secure  agentless
+
+SSH Connection Plugin --> SSH communication between controller node and worker node
+
+Terms used in Ansible :
+- Ansible server :where your ansible is installed and from this you will be able to run your scripts
+
+module :a commands or set of commands that needs to be executed in client .
+
+task: a procedure that you wanted to do on ansible worker
+
+
+Inventory file --> Add all the worker node IP addresses
+
+Playbook --> script --> tomcat script --> yaml
+
+
+3 machines --> centos, ubuntu, redhat
+
+centos --> yum
+ubuntu --> apt-get
+redhat --> yum
+
+============================================== 
+Machine 1 IP Address: 172.32.4.156 - Controller Node
+Machine 2 IP Address 2: 172.32.0.154 - Worker Node
+
+
+
+
+
+Activity 1 --> Installing Ansible 
+
+======================================
+
+Machine 1 IP Address: 172.32.4.156-  Worker Node 
+Machine 2 IP Address 2: 172.32.0.154- Controller  Node  
+
+
+
+Ansible
+
+i) Control Node : This is the machine where actual your ansible is installed. 
+-> Playbooks will be executed on this node. 
+-> it will sends commands to worker node 
+
+ii) Managed node/worker node  : These are like servers, infra devices that you automate and manage through ansible 
+
+iii) Inventory :  dev , test , 
+
+iv) Modules : its like a commands or task. eg : insatllof package 
+-
+
+v) Role : it like way of organizing your playbooks 
+
+workflow :
+
+-> Define inventory -> Write a playbook -> Run playbook from control plane -> it will going and configure your VM or worker node. 
+
+
+================================================================================
+
+Ad-Hoc  commands in ansible:
+---------------------------
+
+-for performing quick function 
+-it is used for one time usage
+-used for managing servers, making a quick changes across multiple systems
+
+key features:
+
+- one time 
+- immediate execution 
+- simplicity 
+
+ansible target -a "ls"
+
+ansible all -m ping 
+Use cases: Testing connectivity 
+-> quick configuration 
+-> Inventory management
+
+Ansible module: one part you want a process 
+
+collection of modules is called playbooks 
+ansible target -b -m  yum -a "pkg=httpd state= present"
+
+-
+
+===========================================================
+Playbooks:
+---------
+
+- written in YAML language 
+-> it will define a series of task
+-> you can manage complex workflow 
+- its like a file where you write code consists of Variables, tasks, handlers, templates.
+and roles
+- Each playbooks consists of one or more modules.
+
+Playbooks are divided into sections.
+
+Target section :Define the host against which playbooks tasks has to be executed
+ 
+variable sections: define variables
+
+
+
+Task section : List of all the modules that needs to be run in an order.
+
+
+key value 
+
+- host: target 
+
+variable: Ansible uses variable that are defined previously it will enable you more
+flexibility in playbooks and roles.
+
+Variables you have to define before the tasks
+
+----
+
+Target section:
+
+
+ - hosts: target 
+ - user:  ansible 
+ - become: yes
+ - connection: ssh 
+ 
+vars:
+    
+	pkgname= mysql
+	
+task:
+   
+    - name= install httpd servers
+	-action = yum  name "{{pkgname}}" state= present
+	
+Special variable:
+magic variable :
+
+
+
+ 
+=====================================================================
+Handlers
+vi handlers.yml
+
+: it is exactly same as tasks but it will run when called by another task.
+
+handlers will going to be executed only if a notify directory 
+
+ - hosts: target 
+ - user:  ansible 
+ - become: yes
+ - connection: ssh 
+ 
+	
+task:
+   
+    - name= install httpd servers
+	-action = yum  name httpd state= present
+	-notify : restart httpd servers
+	
+handlers:
+     - name= restart httpd servers
+	 -action: service name=httpd state = restarted
+	 
+Dry run 
+
+ansible-playbook handlers.yml --check 
+	 
+===========================================================================
+
+Jinja Templates:
+
+
+- it allow you to create a dynamic file by inserting variables and applying condition or loops 
+-useful for generating config files or other documents that changed based on system or env that you are managing. 
+--it makes automation easier 
+-server name as well as email admin 
+
+appache.conf.j2
+serverAdmin {{admin_email}}
+ServerName {{ server_name }}
+DocumentRoot /var/www
+
+- hosts: target 
+ - user:  ansible 
+ - become: yes
+ - connection: ssh 
+
+vars:
+    admin_email:
+    server_name:
+	
+task:
+   
+    - name= install httpd servers
+	-action = yum  name httpd state= present
+	-notify : restart httpd servers
+	
+handlers:
+     - name= restart httpd servers
+	 -action: service name=httpd state = restarted
+
+key values:
+i) Reusability 
+2) Efficiency :
+3) Flexibility 
+
+
+====================================================================================
+
+Ansible tags :
+are basically used for controlling your playbooks
+why tags are use:
+to run specific task
+- for debugging , testing , updating 
+
+
+Return values:
+
+- o/p generated by ansible after execution
+-details info of task
+
+some common values:
+
+- changed= 
+failed
+msg:
+rc
+
+failed 
+
+-stdout -standard output 
+-sterr-	 error 
+
+=======================================================================	 
+
+Ansible Vault : 
+- To encrypt the playbook we use vault . 
+so the content of playbook shouldn't be misused by anyone. 
+
+- Ansible allows you to keep sensitive data such as password or keys 
+in encrypted files rather than plaintext in your playbook,
+
+- How we can create encrypted playbook
+
+ansible-vault create xyz.yml 
+
+- To edit encrypted playbook 
+
+ansible-vault edit vault.yml 
+
+- To encrypt the existing playbook
+
+ansible-vault encrypt target.yml 
+
+To change the password 
+-ansible-vault rekey vault.yml 
+
+-To decrypt an encrypted playbook 
+ansible-vault decrypt target.yml 
+
+Key-fetures of ansible vault
+
+1.Encryption
+
+2. Integration 
+
+3 Flexibility 
+
+Ansible vault Id :
+
+-it allows you to manage multiple vault password or encryption keys within 
+a single ansible project.
+-useful when different parts of your project require different levels of access
+or when you require to rotate the keys without disrupting your workflows.
+
+
+
+=================================================================
+Ansible roles:
+Roles in ansible are way to organize and encapsulate reusable tasks, variables, 
+files, templates and handlers. 
+They enable you to break the down complex playbook into reusable components,
+making your automation code more modular , maintainable and scalable.
+
+ansible-galaxy init my_role 
+ 
+ Ansible galaxy 
+ 
+ - Ansible galaxy is community hub for sharing ansible roles and collection.
+ - It provides platform where you can find , share and download reusable ansible roles.
+ and collections developed by others, as well as publish your own.
+
+
+
+ 
+
+ansible target -m lineinfile -a "path='/etc/httpd/conf/httpd.conf' regexp='^Listen ' insertafter='^#Listen ' line='Listen 8080' state=present" --become
+
+
+
+ansible target -m service -a "name=httpd enabled=yes state=started" --become
+
+ansible target -m yum -a "name=httpd state=removed" --become
+
+
+========================================================================
+
+Error Handling 
+
+What is CI/CD ?
+
+CI : Continuous Integration
+- changes are integrated continuously, build, tested , qa
+CD: Continuous Delivery:
+Dev env
+qa env
+tes env
+pre-prod
+production env 
+=====> Jenkins
+- Continuous Deployment 
+
+throughput - 
+Faster delivery 
+stability 
+
+========================================================================
+
+Jenkins:
+=======
+
+vi /etc/ansible/ansible.cfg
+
+host_key_auto_add = True
+record_host_keys=False
+host_key_checking = False
+
+sudo_user      = root
+remote_user = root
+become_user=root
+
+#vault_password_file = /path/to/vault_password_file
+
+
+
+Static code analysis --> SonarQube --> issues, bugs, vulnerabilities,... --> quality of the source code
+
+Playbook --> script(yaml) --> code --> sanity testing --> ansible-lint 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

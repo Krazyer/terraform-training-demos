@@ -1,0 +1,9 @@
+---
+- hosts: target
+  become: yes
+  gather_facts: false
+  
+  tasks:
+  - name: Create a file with some content
+    copy: "dest=/tmp/file1.txt content='Hi, Hello, How are you?'"
+    
